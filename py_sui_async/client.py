@@ -62,7 +62,7 @@ class Client:
 
             bip39_seed = bip_utils.Bip39SeedGenerator(mnemonic).Generate()
             bip32_ctx = bip_utils.Bip32Slip10Ed25519.FromSeed(bip39_seed)
-            bip32_der_ctx = bip32_ctx.DerivePath(derivation_path)
+            bip32_der_ctx = bip32_ctx.DerivePath(self.derivation_path)
 
             private_key = bip32_der_ctx.PrivateKey().Raw()
             private_key = StringAndBytes(str_="0x" + str(private_key), bytes_=private_key.ToBytes())

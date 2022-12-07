@@ -20,7 +20,7 @@ class RPC:
     @staticmethod
     async def send_request(client, json_data: dict or list) -> Optional[dict]:
         async with aiohttp.ClientSession(headers=client.headers) as session:
-            async with session.post(client.network.rpc, ssl=False, proxy=client.proxy, json=json_data) as response:
+            async with session.post(client.network.rpc, proxy=client.proxy, json=json_data) as response:
                 if response.status <= 201:
                     return await response.json()
 
