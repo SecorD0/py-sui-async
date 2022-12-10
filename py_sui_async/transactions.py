@@ -23,13 +23,13 @@ class Transaction:
                 await RPC.getTransactions(client=self.client, query={'FromAddress': address}, cursor=None, limit=None,
                                           descending_order=True, get_json=True),
             ]
-            response = await RPC.send_request(client=self.client, json_data=json_data)
+            response = await RPC.async_get(client=self.client, json_data=json_data)
             try:
                 incoming_txs = response[0]['result']['data']
                 json_data = [await RPC.getTransaction(client=self.client, digest=tx, get_json=True) for tx in
                              incoming_txs]
                 incoming_txs = [incoming_tx['result'] for incoming_tx in
-                                await RPC.send_request(client=self.client, json_data=json_data)]
+                                await RPC.async_get(client=self.client, json_data=json_data)]
                 for incoming_tx in incoming_txs:
                     certificate = incoming_tx['certificate']
                     data = certificate['data']
@@ -46,7 +46,7 @@ class Transaction:
                 json_data = [await RPC.getTransaction(client=self.client, digest=tx, get_json=True) for tx in
                              outgoing_txs]
                 outgoing_txs = [outgoing_tx['result'] for outgoing_tx in
-                                await RPC.send_request(client=self.client, json_data=json_data)]
+                                await RPC.async_get(client=self.client, json_data=json_data)]
                 for outgoing_tx in outgoing_txs:
                     certificate = outgoing_tx['certificate']
                     data = certificate['data']

@@ -26,7 +26,7 @@ class Wallet:
             query_list = split_list(queries, 200)
             objs = []
             for json_data in query_list:
-                objs += await RPC.send_request(client=self.client, json_data=json_data)
+                objs += await RPC.async_get(client=self.client, json_data=json_data)
 
             for obj in objs:
                 obj_id = obj['result']['details']['reference']['objectId']
@@ -79,7 +79,7 @@ class Wallet:
             query_list = split_list(queries, 200)
             objs = []
             for json_data in query_list:
-                objs += await RPC.send_request(client=self.client, json_data=json_data)
+                objs += await RPC.async_get(client=self.client, json_data=json_data)
 
             for obj in objs:
                 obj_id = obj['result']['details']['reference']['objectId']
