@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional, List, Dict
+
 from pretty_utils.type_functions.classes import AutoRepr
 
 
@@ -89,10 +90,10 @@ class ObjectType:
     symbol: Optional[str] = None
 
 
-@dataclass
-class ObjectID:
-    id: str
-    amount: int
+class ObjectID(AutoRepr):
+    def __init__(self, id: str, amount: int or str):
+        self.id: str = id
+        self.amount: int = int(amount)
 
 
 @dataclass
