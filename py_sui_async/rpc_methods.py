@@ -4,7 +4,7 @@ from typing import Optional, List
 import aiohttp
 
 from py_sui_async import exceptions
-from py_sui_async.models import Types
+from py_sui_async.models import Types, ObjectType
 
 
 class RPC:
@@ -22,10 +22,14 @@ class RPC:
         async with aiohttp.ClientSession(headers=client.headers) as session:
             async with session.post(client.network.rpc, proxy=client.proxy, json=json_data) as response:
                 if response.status <= 201:
-                    return await response.json()
+                    json_dict = await response.json()
+                    if 'error' in json_dict:
+                        error = json_dict['error']
+                        raise exceptions.RPCException(response=response, code=error['code'], message=error['message'])
 
-                else:
-                    raise exceptions.RPCException(response)
+                    return json_dict
+
+                raise exceptions.RPCException(response=response)
 
     @staticmethod
     async def batchTransaction(client, signer: Types.SuiAddress,
@@ -61,9 +65,88 @@ class RPC:
         return await RPC.async_get(client=client, json_data=json_data)
 
     @staticmethod
+    async def executeTransactionSerializedSig(client, tx_bytes: Types.Base64, signature: Types.Base64,
+                                              request_type: Types.ExecuteTransactionRequestType,
+                                              get_json: bool = False) -> Optional[dict or list]:
+        params = [tx_bytes, signature, request_type]
+        json_data = await RPC.make_json(method='sui_executeTransactionSerializedSig', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_get(client=client, json_data=json_data)
+
+    @staticmethod
+    async def getAllBalances(client, owner: Types.SuiAddress, get_json: bool = False) -> Optional[dict or list]:
+        params = [owner]
+        json_data = await RPC.make_json(method='sui_getAllBalances', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_get(client=client, json_data=json_data)
+
+    @staticmethod
+    async def getAllCoins(client, owner: Types.SuiAddress, cursor: Types.ObjectID,
+                          limit: Optional[int], get_json: bool = False) -> Optional[dict or list]:
+        params = [owner, cursor, limit]
+        json_data = await RPC.make_json(method='sui_getAllCoins', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_get(client=client, json_data=json_data)
+
+    @staticmethod
+    async def getBalance(client, owner: Types.SuiAddress, coin_type: str or ObjectType,
+                         get_json: bool = False) -> Optional[dict or list]:
+        params = [owner, coin_type.raw_type if isinstance(coin_type, ObjectType) else coin_type]
+        json_data = await RPC.make_json(method='sui_getBalance', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_get(client=client, json_data=json_data)
+
+    @staticmethod
+    async def getCoinMetadata(client, coin_type: str or ObjectType, get_json: bool = False) -> Optional[dict or list]:
+        params = [coin_type.raw_type if isinstance(coin_type, ObjectType) else coin_type]
+        json_data = await RPC.make_json(method='sui_getCoinMetadata', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_get(client=client, json_data=json_data)
+
+    @staticmethod
+    async def getCoins(client, owner: Types.SuiAddress, coin_type: str or ObjectType, cursor: Types.ObjectID,
+                       limit: Optional[int], get_json: bool = False) -> Optional[dict or list]:
+        params = [owner, coin_type.raw_type if isinstance(coin_type, ObjectType) else coin_type, cursor, limit]
+        json_data = await RPC.make_json(method='sui_getCoins', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_get(client=client, json_data=json_data)
+
+    @staticmethod
     async def getCommitteeInfo(client, epoch: int, get_json: bool = False) -> Optional[dict or list]:
         params = [epoch]
         json_data = await RPC.make_json(method='sui_getCommitteeInfo', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_get(client=client, json_data=json_data)
+
+    @staticmethod
+    async def getDynamicFieldObject(client, parent_object_id: Types.ObjectID, name: str,
+                                    get_json: bool = False) -> Optional[dict or list]:
+        params = [parent_object_id, name]
+        json_data = await RPC.make_json(method='sui_getDynamicFieldObject', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_get(client=client, json_data=json_data)
+
+    @staticmethod
+    async def getDynamicFields(client, parent_object_id: Types.ObjectID, cursor: Types.ObjectID,
+                               limit: Optional[int], get_json: bool = False) -> Optional[dict or list]:
+        params = [parent_object_id, cursor, limit]
+        json_data = await RPC.make_json(method='sui_getDynamicFields', params=params)
         if get_json:
             return json_data
 
@@ -81,8 +164,7 @@ class RPC:
 
     @staticmethod
     async def getMoveFunctionArgTypes(client, package: Types.ObjectID, module: str, function: str,
-                                      get_json: bool = False) -> \
-            Optional[dict or list]:
+                                      get_json: bool = False) -> Optional[dict or list]:
         params = [package, module, function]
         json_data = await RPC.make_json(method='sui_getMoveFunctionArgTypes', params=params)
         if get_json:
@@ -169,6 +251,23 @@ class RPC:
         return await RPC.async_get(client=client, json_data=json_data)
 
     @staticmethod
+    async def getSuiSystemState(client, get_json: bool = False) -> Optional[dict or list]:
+        json_data = await RPC.make_json(method='sui_getSuiSystemState')
+        if get_json:
+            return json_data
+
+        return await RPC.async_get(client=client, json_data=json_data)
+
+    @staticmethod
+    async def getTotalSupply(client, coin_type: str or ObjectType, get_json: bool = False) -> Optional[dict or list]:
+        params = [coin_type.raw_type if isinstance(coin_type, ObjectType) else coin_type]
+        json_data = await RPC.make_json(method='sui_getTotalSupply', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_get(client=client, json_data=json_data)
+
+    @staticmethod
     async def getTotalTransactionNumber(client, get_json: bool = False) -> Optional[dict or list]:
         json_data = await RPC.make_json(method='sui_getTotalTransactionNumber')
         if get_json:
@@ -180,6 +279,16 @@ class RPC:
     async def getTransaction(client, digest: Types.TransactionDigest, get_json: bool = False) -> Optional[dict or list]:
         params = [digest]
         json_data = await RPC.make_json(method='sui_getTransaction', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_get(client=client, json_data=json_data)
+
+    @staticmethod
+    async def getTransactionAuthSigners(client, digest: Types.TransactionDigest,
+                                        get_json: bool = False) -> Optional[dict or list]:
+        params = [digest]
+        json_data = await RPC.make_json(method='sui_getTransactionAuthSigners', params=params)
         if get_json:
             return json_data
 
@@ -242,8 +351,8 @@ class RPC:
 
     @staticmethod
     async def payAllSui(client, signer: Types.SuiAddress, input_coins: List[Types.ObjectID],
-                        recipient: Types.SuiAddress, gas_budget: int = 1_000, get_json: bool = False) -> Optional[
-        dict or list]:
+                        recipient: Types.SuiAddress, gas_budget: int = 1_000,
+                        get_json: bool = False) -> Optional[dict or list]:
         params = [signer, input_coins, recipient, gas_budget]
         json_data = await RPC.make_json(method='sui_payAllSui', params=params)
         if get_json:

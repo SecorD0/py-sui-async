@@ -24,8 +24,8 @@ class Types:
 
 
 class SignatureScheme:
-    ED25519 = 'ED25519'
-    Secp256k1 = 'Secp256k1'
+    ED25519 = 0
+    Secp256k1 = 1
 
 
 class ExecuteType:

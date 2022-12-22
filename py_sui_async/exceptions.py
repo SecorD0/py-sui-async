@@ -1,7 +1,6 @@
 from typing import Optional
 
 import aiohttp
-import requests
 
 
 class ClientException(Exception):
@@ -13,8 +12,17 @@ class InvalidProxy(ClientException):
 
 
 class RPCException(ClientException):
-    def __init__(self, response: Optional[aiohttp.ClientResponse]):
+    def __init__(self, response: Optional[aiohttp.ClientResponse] = None, code: Optional[int] = None,
+                 message: Optional[str] = None) -> None:
         self.response = response
+        self.code = code
+        self.message = message
+
+    def __str__(self):
+        if self.code:
+            return f'{self.code}, {self.message}'
+
+        return f'{self.response.status}'
 
 
 class NFTException(Exception):

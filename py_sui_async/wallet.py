@@ -33,9 +33,8 @@ class Wallet:
                 obj_data = obj['result']['details']['data']
                 obj_type = await parse_type(obj_data['type'])
                 obj_fields = obj_data['fields']
-                obj_balance = int(obj_fields['balance'])
-
                 if obj_type.type == 'coin':
+                    obj_balance = int(obj_fields['balance'])
                     obj_id = ObjectID(id=obj_id, amount=obj_balance)
                     if obj_type.name == 'sui':
                         if balance.coin:
@@ -87,9 +86,9 @@ class Wallet:
                 obj_data = obj['result']['details']['data']
                 obj_type = await parse_type(obj_data['type'])
                 obj_fields = obj_data['fields']
-                obj_balance = obj_fields['balance']
 
                 if obj_type.type == 'coin' and obj_type.name == 'sui':
+                    obj_balance = int(obj_fields['balance'])
                     obj_id = ObjectID(id=obj_id, amount=obj_balance)
                     if coin:
                         coin.balance += obj_balance
