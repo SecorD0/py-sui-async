@@ -33,31 +33,32 @@ class Wallet:
                 obj_data = obj['result']['details']['data']
                 obj_type = await parse_type(obj_data['type'])
                 obj_fields = obj_data['fields']
-                if obj_type.type == 'coin':
+                if obj_type.module == 'coin':
                     obj_balance = int(obj_fields['balance'])
                     obj_id = ObjectID(id=obj_id, amount=obj_balance)
-                    if obj_type.name == 'sui':
+                    if obj_type.structure.name == 'sui':
                         if balance.coin:
                             balance.coin.balance += obj_balance
                             balance.coin.object_ids.append(obj_id)
 
                         else:
-                            balance.coin = Coin(name=obj_type.name, symbol=obj_type.symbol,
-                                                package_id=obj_type.package_id,
+                            balance.coin = Coin(name=obj_type.structure.name, symbol=obj_type.structure.symbol,
+                                                package_id=obj_type.structure.package_id,
                                                 balance=obj_balance, object_ids=[obj_id])
 
                     else:
-                        if obj_type.name in balance.tokens:
-                            coin = balance.tokens[obj_type.name]
+                        if obj_type.structure.name in balance.tokens:
+                            coin = balance.tokens[obj_type.structure.name]
                             coin.balance += obj_balance
                             coin.object_ids.append(obj_id)
 
                         else:
-                            balance.tokens[obj_type.name] = Coin(name=obj_type.name, symbol=obj_type.symbol,
-                                                                 package_id=obj_type.package_id,
-                                                                 balance=obj_balance, object_ids=[obj_id])
+                            balance.tokens[obj_type.structure.name] = Coin(name=obj_type.structure.name,
+                                                                           symbol=obj_type.structure.symbol,
+                                                                           package_id=obj_type.structure.package_id,
+                                                                           balance=obj_balance, object_ids=[obj_id])
 
-                elif 'nft' in obj_type.raw_type.lower():
+                elif obj_type.module == 'devnet_nft':
                     balance.nfts[obj_id] = Nft(name=obj_fields['name'], description=obj_fields['description'],
                                                image_url=obj_fields['url'], object_id=obj_id)
 
@@ -87,7 +88,7 @@ class Wallet:
                 obj_type = await parse_type(obj_data['type'])
                 obj_fields = obj_data['fields']
 
-                if obj_type.type == 'coin' and obj_type.name == 'sui':
+                if obj_type.module == 'coin' and obj_type.structure.name == 'sui':
                     obj_balance = int(obj_fields['balance'])
                     obj_id = ObjectID(id=obj_id, amount=obj_balance)
                     if coin:
@@ -95,8 +96,8 @@ class Wallet:
                         coin.object_ids.append(obj_id)
 
                     else:
-                        coin = Coin(name=obj_type.name, symbol=obj_type.symbol, package_id=obj_type.package_id,
-                                    balance=obj_balance, object_ids=[obj_id])
+                        coin = Coin(name=obj_type.structure.name, symbol=obj_type.structure.symbol,
+                                    package_id=obj_type.structure.package_id, balance=obj_balance, object_ids=[obj_id])
 
         else:
             coin = balance.coin

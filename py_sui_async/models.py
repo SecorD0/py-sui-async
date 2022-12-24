@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 
 from pretty_utils.type_functions.classes import AutoRepr
 
@@ -15,7 +15,7 @@ class Types:
     SequenceNumber = int
     SignatureScheme = str
     SuiAddress = str
-    SuiJsonValue = dict or list
+    SuiJsonValue = Union[dict, list]
     TransactionDigest = str
     TransactionQuery = dict
     TxBytes = bytes
@@ -81,28 +81,28 @@ class History:
     outgoing: List[Tx]
 
 
-@dataclass
-class ObjectType:
-    raw_type: str
-    type: Optional[str] = None
-    package_id: Optional[str] = None
-    name: Optional[str] = None
-    symbol: Optional[str] = None
-
-
 class ObjectID(AutoRepr):
-    def __init__(self, id: str, amount: int or str):
+    def __init__(self, id: str, amount: Union[int, str]) -> None:
         self.id: str = id
         self.amount: int = int(amount)
 
 
+class Coin(AutoRepr):
+    def __init__(self, name: str, symbol: str, package_id: str, balance: Optional[float] = 0.0,
+                 object_ids: Optional[List[ObjectID]] = None) -> None:
+        self.name: str = name
+        self.symbol: str = symbol
+        self.package_id: str = package_id
+        self.balance: Optional[float] = balance
+        self.object_ids: Optional[List[ObjectID]] = object_ids or []
+
+
 @dataclass
-class Coin:
-    name: str
-    symbol: str
-    package_id: str
-    balance: float
-    object_ids: List[ObjectID]
+class ObjectType:
+    raw_type: str
+    package_id: Optional[str] = None
+    module: Optional[str] = None
+    structure: Optional[Union[str, Coin]] = None
 
 
 class Nft(AutoRepr):
