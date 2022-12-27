@@ -4,11 +4,9 @@ from typing import Optional
 
 import bip_utils
 import requests
-from bs4 import BeautifulSoup as BS
 from fake_useragent import UserAgent
 from nacl.encoding import Base64Encoder
 from nacl.signing import SigningKey
-from pretty_utils.type_functions.strings import text_between
 
 from py_sui_async import exceptions
 from py_sui_async.models import Network, Networks, WalletInfo, SignatureScheme, ExecuteType, StringAndBytes
@@ -40,15 +38,9 @@ class Client:
                     self.proxy = f'http://{self.proxy}'
 
                 if check_proxy:
-                    response = requests.get('https://whoer.net/', proxies={'http': self.proxy, 'https': self.proxy})
-                    if '@' in self.proxy:
-                        proxy = text_between(self.proxy, '@', ':')
-                    else:
-                        proxy = text_between(self.proxy, end=':')
-
-                    if proxy not in response.text:
-                        soup = BS(response.text, 'html.parser')
-                        your_ip = soup.find('strong', class_='your-ip').get_text(strip=True)
+                    your_ip = requests.get('http://eth0.me/', proxies={'http': self.proxy,
+                                                                       'https': self.proxy}).text.rstrip()
+                    if your_ip not in proxy:
                         raise exceptions.InvalidProxy(f"Proxy doesn't work! Your IP is {your_ip}")
 
             except Exception as e:
