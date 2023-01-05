@@ -69,7 +69,7 @@ class Client:
         self.transactions = Transaction(self)
         self.wallet = Wallet(self)
 
-    async def sign_data(self, tx_data: bytes) -> Optional[bytes]:
+    async def sign(self, tx_data: bytes) -> Optional[bytes]:
         indata = bytearray([0, 0, 0])
         indata.extend(tx_data)
 
@@ -79,8 +79,8 @@ class Client:
         compound.extend(self.account.public_key.bytes_[1:])
         return base64.b64encode(bytes(compound))
 
-    async def sign_and_execute_transaction(self, tx_bytes: StringAndBytes) -> Optional[dict]:
-        signature = (await self.sign_data(tx_bytes.bytes_)).decode()
+    async def sign_and_execute(self, tx_bytes: StringAndBytes) -> Optional[dict]:
+        signature = (await self.sign(tx_bytes.bytes_)).decode()
         request_type = ExecuteType.WaitForLocalExecution
         return await RPC.executeTransactionSerializedSig(client=self, tx_bytes=tx_bytes.str_, signature=signature,
                                                          request_type=request_type)

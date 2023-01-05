@@ -78,7 +78,7 @@ class Transaction:
                                       gas_budget=gas_budget)
         tx_bytes = str(response['result']['txBytes'])
         tx_bytes = StringAndBytes(str_=tx_bytes, bytes_=base64.b64decode(tx_bytes))
-        return await self.client.sign_and_execute_transaction(tx_bytes)
+        return await self.client.sign_and_execute(tx_bytes)
 
     async def merge_coin(self, coin: Coin) -> Optional[List[dict]]:
         responses = []
@@ -105,7 +105,7 @@ class Transaction:
                                                 gas_budget=gas_budget)
                 tx_bytes = str(response['result']['txBytes'])
                 tx_bytes = StringAndBytes(str_=tx_bytes, bytes_=base64.b64decode(tx_bytes))
-                response = await self.client.sign_and_execute_transaction(tx_bytes)
+                response = await self.client.sign_and_execute(tx_bytes)
                 responses.append(response)
 
         except:
@@ -125,7 +125,7 @@ class Transaction:
                                             gas_budget=gas_budget)
         tx_bytes = str(response['result']['txBytes'])
         tx_bytes = StringAndBytes(str_=tx_bytes, bytes_=base64.b64decode(tx_bytes))
-        return await self.client.sign_and_execute_transaction(tx_bytes)
+        return await self.client.sign_and_execute(tx_bytes)
 
     async def send_coin(self, recipient: Types.SuiAddress, amount: int) -> Optional[dict]:
         balance = await self.client.wallet.balance()
@@ -141,7 +141,7 @@ class Transaction:
                                     recipients=[recipient], amounts=[amount], gas_budget=gas_budget)
         tx_bytes = str(response['result']['txBytes'])
         tx_bytes = StringAndBytes(str_=tx_bytes, bytes_=base64.b64decode(tx_bytes))
-        return await self.client.sign_and_execute_transaction(tx_bytes)
+        return await self.client.sign_and_execute(tx_bytes)
 
     async def send_token(self, token: Optional[Coin], recipient: Types.SuiAddress, amount: int) -> Optional[dict]:
         balance = await self.client.wallet.balance()
@@ -156,7 +156,7 @@ class Transaction:
                                      recipients=[recipient], amounts=[amount], gas=gas, gas_budget=gas_budget)
             tx_bytes = str(response['result']['txBytes'])
             tx_bytes = StringAndBytes(str_=tx_bytes, bytes_=base64.b64decode(tx_bytes))
-            return await self.client.sign_and_execute_transaction(tx_bytes)
+            return await self.client.sign_and_execute(tx_bytes)
 
         else:
             raise exceptions.NoSuchToken('There is no such token!')
