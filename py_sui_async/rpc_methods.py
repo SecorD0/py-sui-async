@@ -18,7 +18,7 @@ class RPC:
         }
 
     @staticmethod
-    async def async_get(client, json_data: Union[dict, list]) -> Optional[dict]:
+    async def async_post(client, json_data: Union[dict, list]) -> Optional[dict]:
         async with aiohttp.ClientSession(headers=client.headers) as session:
             async with session.post(client.network.rpc, proxy=client.proxy, json=json_data) as response:
                 if response.status <= 201:
@@ -41,7 +41,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def dryRunTransaction(client, tx_bytes: Types.Base64, get_json: bool = False) -> Optional[Union[dict, list]]:
@@ -50,7 +50,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def executeTransaction(client, tx_bytes: Types.Base64, sig_scheme: Types.SignatureScheme,
@@ -62,7 +62,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def executeTransactionSerializedSig(client, tx_bytes: Types.Base64, signature: Types.Base64,
@@ -73,7 +73,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getAllBalances(client, owner: Types.SuiAddress, get_json: bool = False) -> Optional[Union[dict, list]]:
@@ -82,7 +82,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getAllCoins(client, owner: Types.SuiAddress, cursor: Types.ObjectID,
@@ -92,7 +92,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getBalance(client, owner: Types.SuiAddress, coin_type: Union[str, ObjectType],
@@ -102,7 +102,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getCoinMetadata(client, coin_type: Union[str, ObjectType],
@@ -112,7 +112,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getCoins(client, owner: Types.SuiAddress, coin_type: Union[str, ObjectType], cursor: Types.ObjectID,
@@ -122,7 +122,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getCommitteeInfo(client, epoch: int, get_json: bool = False) -> Optional[Union[dict, list]]:
@@ -131,7 +131,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getDynamicFieldObject(client, parent_object_id: Types.ObjectID, name: str,
@@ -141,7 +141,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getDynamicFields(client, parent_object_id: Types.ObjectID, cursor: Types.ObjectID,
@@ -151,7 +151,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getEvents(client, query: Types.EventQuery, cursor: Types.EventID, limit: int,
@@ -161,7 +161,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getMoveFunctionArgTypes(client, package: Types.ObjectID, module: str, function: str,
@@ -171,7 +171,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getNormalizedMoveFunction(client, package: Types.ObjectID, module: str, function: str,
@@ -181,7 +181,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getNormalizedMoveModule(client, package: Types.ObjectID, module_name: str,
@@ -191,7 +191,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getNormalizedMoveModulesByPackage(client, package: Types.ObjectID,
@@ -201,7 +201,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getNormalizedMoveStruct(client, package: Types.ObjectID, module_name: str,
@@ -211,7 +211,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getObject(client, object_id: Types.ObjectID, get_json: bool = False) -> Optional[Union[dict, list]]:
@@ -220,7 +220,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getObjectsOwnedByAddress(client, address: Types.SuiAddress,
@@ -230,7 +230,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getObjectsOwnedByObject(client, object_id: Types.ObjectID,
@@ -240,7 +240,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getRawObject(client, object_id: Types.ObjectID, get_json: bool = False) -> Optional[Union[dict, list]]:
@@ -249,7 +249,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getSuiSystemState(client, get_json: bool = False) -> Optional[Union[dict, list]]:
@@ -257,7 +257,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getTotalSupply(client, coin_type: Union[str, ObjectType],
@@ -267,7 +267,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getTotalTransactionNumber(client, get_json: bool = False) -> Optional[Union[dict, list]]:
@@ -275,7 +275,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getTransaction(client, digest: Types.TransactionDigest,
@@ -285,7 +285,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getTransactionAuthSigners(client, digest: Types.TransactionDigest,
@@ -295,7 +295,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getTransactions(client, query: Types.TransactionQuery, cursor: Optional[Types.TransactionDigest],
@@ -306,7 +306,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def getTransactionsInRange(client, start: int, end: int,
@@ -316,7 +316,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def mergeCoins(client, signer: Types.SuiAddress, primary_coin: Types.ObjectID,
@@ -327,7 +327,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def moveCall(client, signer: Types.SuiAddress, package_object_id: Types.ObjectID, module: str,
@@ -340,7 +340,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def pay(client, signer: Types.SuiAddress, input_coins: List[Types.ObjectID],
@@ -351,7 +351,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def payAllSui(client, signer: Types.SuiAddress, input_coins: List[Types.ObjectID],
@@ -362,7 +362,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def paySui(client, signer: Types.SuiAddress, input_coins: List[Types.ObjectID],
@@ -373,7 +373,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def publish(client, sender: Types.SuiAddress, compiled_modules: List[Types.Base64],
@@ -384,7 +384,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def splitCoin(client, signer: Types.SuiAddress, coin_object_id: Types.ObjectID,
@@ -395,7 +395,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def splitCoinEqual(client, signer: Types.SuiAddress, coin_object_id: Types.ObjectID,
@@ -406,7 +406,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def subscribeEvent(client, filter: Types.EventFilter, get_json: bool = False) -> Optional[Union[dict, list]]:
@@ -415,7 +415,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def transferObject(client, signer: Types.SuiAddress, object_id: Types.ObjectID, recipient: Types.SuiAddress,
@@ -426,7 +426,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def transferSui(client, signer: Types.SuiAddress, sui_object_id: Types.ObjectID, gas_budget: int,
@@ -437,7 +437,7 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
     async def tryGetPastObject(client, object_id: Types.ObjectID, version: Types.SequenceNumber,
@@ -447,4 +447,4 @@ class RPC:
         if get_json:
             return json_data
 
-        return await RPC.async_get(client=client, json_data=json_data)
+        return await RPC.async_post(client=client, json_data=json_data)
