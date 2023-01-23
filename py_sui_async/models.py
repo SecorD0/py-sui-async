@@ -4,25 +4,6 @@ from typing import Optional, List, Dict, Union
 from pretty_utils.type_functions.classes import AutoRepr
 
 
-class Types:
-    Base64 = str
-    EventFilter = str
-    EventID = str
-    EventQuery = dict
-    ExecuteTransactionRequestType = str
-    ObjectID = str
-    RPCTransactionRequestParams = dict
-    SequenceNumber = int
-    SignatureScheme = str
-    SuiAddress = str
-    SuiJsonValue = Union[dict, list]
-    TransactionDigest = str
-    TransactionQuery = dict
-    TxBytes = bytes
-    TxHash = bytes
-    TypeTag = str
-
-
 class SignatureScheme:
     ED25519 = 0
     Secp256k1 = 1

@@ -2,8 +2,8 @@ import base64
 import logging
 from typing import Optional, List
 
-from py_sui_async import exceptions
-from py_sui_async.models import Types, History, Tx, Coin, Nft, StringAndBytes
+from py_sui_async import exceptions, types
+from py_sui_async.models import History, Tx, Coin, Nft, StringAndBytes
 from py_sui_async.rpc_methods import RPC
 
 
@@ -65,8 +65,8 @@ class Transaction:
         finally:
             return history
 
-    async def move_call(self, package_object_id: Types.ObjectID, module: str, function: str,
-                        type_arguments: Optional[List[Types.TypeTag]], arguments: List[Types.SuiJsonValue],
+    async def move_call(self, package_object_id: types.ObjectID, module: str, function: str,
+                        type_arguments: Optional[List[types.TypeTag]], arguments: List[types.SuiJsonValue],
                         gas_budget: int = 1_000) -> Optional[dict]:
         gas = await self.client.wallet.find_object_for_gas(gas_budget=gas_budget)
         if not gas:
@@ -114,7 +114,7 @@ class Transaction:
         finally:
             return responses
 
-    async def send_object(self, object_id: str, recipient: Types.SuiAddress) -> Optional[dict]:
+    async def send_object(self, object_id: types.ObjectID, recipient: types.SuiAddress) -> Optional[dict]:
         gas_budget = 1_000
         gas = await self.client.wallet.find_object_for_gas(gas_budget=gas_budget)
         if not gas:
@@ -127,7 +127,7 @@ class Transaction:
         tx_bytes = StringAndBytes(str_=tx_bytes, bytes_=base64.b64decode(tx_bytes))
         return await self.client.sign_and_execute(tx_bytes)
 
-    async def send_coin(self, recipient: Types.SuiAddress, amount: int) -> Optional[dict]:
+    async def send_coin(self, recipient: types.SuiAddress, amount: int) -> Optional[dict]:
         balance = await self.client.wallet.balance()
         gas_budget = 1_000
         gas = await self.client.wallet.find_object_for_gas(gas_budget=gas_budget, balance=balance)
@@ -143,7 +143,7 @@ class Transaction:
         tx_bytes = StringAndBytes(str_=tx_bytes, bytes_=base64.b64decode(tx_bytes))
         return await self.client.sign_and_execute(tx_bytes)
 
-    async def send_token(self, token: Optional[Coin], recipient: Types.SuiAddress, amount: int) -> Optional[dict]:
+    async def send_token(self, token: Optional[Coin], recipient: types.SuiAddress, amount: int) -> Optional[dict]:
         balance = await self.client.wallet.balance()
         if token.name in balance.tokens:
             gas_budget = 1_000
@@ -161,5 +161,5 @@ class Transaction:
         else:
             raise exceptions.NoSuchToken('There is no such token!')
 
-    async def send_nft(self, nft: Optional[Nft], recipient: Types.SuiAddress) -> Optional[dict]:
+    async def send_nft(self, nft: Nft, recipient: types.SuiAddress) -> Optional[dict]:
         return await self.send_object(object_id=nft.object_id, recipient=recipient)
