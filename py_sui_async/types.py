@@ -1,6 +1,8 @@
 from typing import Union
 
 Base64 = str
+CheckpointContentsDigest = str
+CheckpointDigest = str
 EventFilter = str
 EventID = str
 EventQuery = dict

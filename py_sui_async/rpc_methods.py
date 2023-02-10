@@ -8,6 +8,8 @@ from py_sui_async.models import ObjectType
 
 
 class RPC:
+    version = '0.26.0'
+
     @staticmethod
     async def make_json(method: str, params: Optional[list] = None, request_id: Optional[str] = None):
         return {
@@ -38,6 +40,16 @@ class RPC:
                                get_json: bool = False) -> Optional[Union[dict, list]]:
         params = [signer, single_transaction_params, gas, gas_budget]
         json_data = await RPC.make_json(method='sui_batchTransaction', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_post(client=client, json_data=json_data)
+
+    @staticmethod
+    async def devInspectTransaction(client, sender_address: types.SuiAddress, tx_bytes: types.Base64, gas_price: int,
+                                    epoch: int, get_json: bool = False) -> Optional[Union[dict, list]]:
+        params = [sender_address, tx_bytes, gas_price, epoch]
+        json_data = await RPC.make_json(method='sui_devInspectTransaction', params=params)
         if get_json:
             return json_data
 
@@ -105,6 +117,45 @@ class RPC:
         return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
+    async def getCheckpointContents(client, sequence_number: int,
+                                    get_json: bool = False) -> Optional[Union[dict, list]]:
+        params = [sequence_number]
+        json_data = await RPC.make_json(method='sui_getCheckpointContents', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_post(client=client, json_data=json_data)
+
+    @staticmethod
+    async def getCheckpointContentsByDigest(client, digest: types.CheckpointContentsDigest,
+                                            get_json: bool = False) -> Optional[Union[dict, list]]:
+        params = [digest]
+        json_data = await RPC.make_json(method='sui_getCheckpointContentsByDigest', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_post(client=client, json_data=json_data)
+
+    @staticmethod
+    async def getCheckpointSummary(client, sequence_number: int, get_json: bool = False) -> Optional[Union[dict, list]]:
+        params = [sequence_number]
+        json_data = await RPC.make_json(method='sui_getCheckpointSummary', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_post(client=client, json_data=json_data)
+
+    @staticmethod
+    async def getCheckpointSummaryByDigest(client, digest: types.CheckpointDigest,
+                                           get_json: bool = False) -> Optional[Union[dict, list]]:
+        params = [digest]
+        json_data = await RPC.make_json(method='sui_getCheckpointSummaryByDigest', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_post(client=client, json_data=json_data)
+
+    @staticmethod
     async def getCoinMetadata(client, coin_type: Union[str, ObjectType],
                               get_json: bool = False) -> Optional[Union[dict, list]]:
         params = [coin_type.raw_type if isinstance(coin_type, ObjectType) else coin_type]
@@ -128,6 +179,16 @@ class RPC:
     async def getCommitteeInfo(client, epoch: int, get_json: bool = False) -> Optional[Union[dict, list]]:
         params = [epoch]
         json_data = await RPC.make_json(method='sui_getCommitteeInfo', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_post(client=client, json_data=json_data)
+
+    @staticmethod
+    async def getDelegatedStakes(client, owner: types.SuiAddress,
+                                 get_json: bool = False) -> Optional[Union[dict, list]]:
+        params = [owner]
+        json_data = await RPC.make_json(method='sui_getDelegatedStakes', params=params)
         if get_json:
             return json_data
 
@@ -158,6 +219,14 @@ class RPC:
                         descending_order: bool = False, get_json: bool = False) -> Optional[Union[dict, list]]:
         params = [query, cursor, limit, descending_order]
         json_data = await RPC.make_json(method='sui_getEvents', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_post(client=client, json_data=json_data)
+
+    @staticmethod
+    async def getLatestCheckpointSequenceNumber(client, get_json: bool = False) -> Optional[Union[dict, list]]:
+        json_data = await RPC.make_json(method='sui_getLatestCheckpointSequenceNumber')
         if get_json:
             return json_data
 
@@ -252,6 +321,14 @@ class RPC:
         return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
+    async def getReferenceGasPrice(client, get_json: bool = False) -> Optional[Union[dict, list]]:
+        json_data = await RPC.make_json(method='sui_getReferenceGasPrice')
+        if get_json:
+            return json_data
+
+        return await RPC.async_post(client=client, json_data=json_data)
+
+    @staticmethod
     async def getSuiSystemState(client, get_json: bool = False) -> Optional[Union[dict, list]]:
         json_data = await RPC.make_json(method='sui_getSuiSystemState')
         if get_json:
@@ -313,6 +390,14 @@ class RPC:
                                      get_json: bool = False) -> Optional[Union[dict, list]]:
         params = [start, end]
         json_data = await RPC.make_json(method='sui_getTransactionsInRange', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_post(client=client, json_data=json_data)
+
+    @staticmethod
+    async def getValidators(client, get_json: bool = False) -> Optional[Union[dict, list]]:
+        json_data = await RPC.make_json(method='sui_getValidators')
         if get_json:
             return json_data
 
@@ -387,6 +472,40 @@ class RPC:
         return await RPC.async_post(client=client, json_data=json_data)
 
     @staticmethod
+    async def requestAddDelegation(client, signer: types.SuiAddress, coins: List[types.ObjectID], amount: int,
+                                   validator: types.SuiAddress, gas: Optional[types.ObjectID] = None,
+                                   gas_budget: int = 1_000, get_json: bool = False) -> Optional[Union[dict, list]]:
+        params = [signer, coins, amount, validator, gas, gas_budget]
+        json_data = await RPC.make_json(method='sui_requestAddDelegation', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_post(client=client, json_data=json_data)
+
+    @staticmethod
+    async def requestSwitchDelegation(client, signer: types.SuiAddress, delegation: types.ObjectID,
+                                      staked_sui: types.ObjectID, new_validator_address: types.SuiAddress,
+                                      gas: Optional[types.ObjectID] = None, gas_budget: int = 1_000,
+                                      get_json: bool = False) -> Optional[Union[dict, list]]:
+        params = [signer, delegation, staked_sui, new_validator_address, gas, gas_budget]
+        json_data = await RPC.make_json(method='sui_requestSwitchDelegation', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_post(client=client, json_data=json_data)
+
+    @staticmethod
+    async def requestWithdrawDelegation(client, signer: types.SuiAddress, delegation: types.ObjectID,
+                                        staked_sui: types.ObjectID, gas: Optional[types.ObjectID] = None,
+                                        gas_budget: int = 1_000, get_json: bool = False) -> Optional[Union[dict, list]]:
+        params = [signer, delegation, staked_sui, gas, gas_budget]
+        json_data = await RPC.make_json(method='sui_requestWithdrawDelegation', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_post(client=client, json_data=json_data)
+
+    @staticmethod
     async def splitCoin(client, signer: types.SuiAddress, coin_object_id: types.ObjectID,
                         split_amounts: List[int], gas: Optional[types.ObjectID] = None, gas_budget: int = 1_000,
                         get_json: bool = False) -> Optional[Union[dict, list]]:
@@ -412,6 +531,16 @@ class RPC:
     async def subscribeEvent(client, filter: types.EventFilter, get_json: bool = False) -> Optional[Union[dict, list]]:
         params = [filter]
         json_data = await RPC.make_json(method='sui_subscribeEvent', params=params)
+        if get_json:
+            return json_data
+
+        return await RPC.async_post(client=client, json_data=json_data)
+
+    @staticmethod
+    async def tblsSignRandomnessObject(client, object_id: types.ObjectID, commitment_type: str,
+                                       get_json: bool = False) -> Optional[Union[dict, list]]:
+        params = [object_id, commitment_type]
+        json_data = await RPC.make_json(method='sui_tblsSignRandomnessObject', params=params)
         if get_json:
             return json_data
 
