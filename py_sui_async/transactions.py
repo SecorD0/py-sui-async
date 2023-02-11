@@ -67,8 +67,8 @@ class Transaction:
 
     async def move_call(self, package_object_id: types.ObjectID, module: str, function: str,
                         type_arguments: Optional[List[types.TypeTag]], arguments: List[types.SuiJsonValue],
-                        gas_budget: int = 1_000) -> Optional[dict]:
-        gas = await self.client.wallet.find_object_for_gas(gas_budget=gas_budget)
+                        gas_budget: int = 10_000, gas_price: Optional[int] = None) -> Optional[dict]:
+        gas = await self.client.wallet.find_object_for_gas(gas_budget=gas_budget, gas_price=gas_price)
         if not gas:
             raise exceptions.InsufficientGas()
 
@@ -80,11 +80,11 @@ class Transaction:
         tx_bytes = StringAndBytes(str_=tx_bytes, bytes_=base64.b64decode(tx_bytes))
         return await self.client.sign_and_execute(tx_bytes)
 
-    async def merge_coin(self, coin: Coin) -> Optional[List[dict]]:
+    async def merge_coin(self, coin: Coin, gas_budget: int = 1_000,
+                         gas_price: Optional[int] = None) -> Optional[List[dict]]:
         responses = []
         try:
-            gas_budget = 1_000
-            gas = await self.client.wallet.find_object_for_gas(gas_budget=gas_budget)
+            gas = await self.client.wallet.find_object_for_gas(gas_budget=gas_budget, gas_price=gas_price)
             if not gas:
                 raise exceptions.InsufficientGas()
 
@@ -114,9 +114,9 @@ class Transaction:
         finally:
             return responses
 
-    async def send_object(self, object_id: types.ObjectID, recipient: types.SuiAddress) -> Optional[dict]:
-        gas_budget = 1_000
-        gas = await self.client.wallet.find_object_for_gas(gas_budget=gas_budget)
+    async def send_object(self, object_id: types.ObjectID, recipient: types.SuiAddress, gas_budget: int = 1_000,
+                          gas_price: Optional[int] = None) -> Optional[dict]:
+        gas = await self.client.wallet.find_object_for_gas(gas_budget=gas_budget, gas_price=gas_price)
         if not gas:
             raise exceptions.InsufficientGas()
 
@@ -127,10 +127,10 @@ class Transaction:
         tx_bytes = StringAndBytes(str_=tx_bytes, bytes_=base64.b64decode(tx_bytes))
         return await self.client.sign_and_execute(tx_bytes)
 
-    async def send_coin(self, recipient: types.SuiAddress, amount: int) -> Optional[dict]:
+    async def send_coin(self, recipient: types.SuiAddress, amount: int, gas_budget: int = 1_000,
+                        gas_price: Optional[int] = None) -> Optional[dict]:
         balance = await self.client.wallet.balance()
-        gas_budget = 1_000
-        gas = await self.client.wallet.find_object_for_gas(gas_budget=gas_budget, balance=balance)
+        gas = await self.client.wallet.find_object_for_gas(gas_budget=gas_budget, gas_price=gas_price, balance=balance)
         if not gas:
             raise exceptions.InsufficientGas()
 
@@ -143,11 +143,12 @@ class Transaction:
         tx_bytes = StringAndBytes(str_=tx_bytes, bytes_=base64.b64decode(tx_bytes))
         return await self.client.sign_and_execute(tx_bytes)
 
-    async def send_token(self, token: Optional[Coin], recipient: types.SuiAddress, amount: int) -> Optional[dict]:
+    async def send_token(self, token: Optional[Coin], recipient: types.SuiAddress, amount: int, gas_budget: int = 1_000,
+                         gas_price: Optional[int] = None) -> Optional[dict]:
         balance = await self.client.wallet.balance()
         if token.name in balance.tokens:
-            gas_budget = 1_000
-            gas = await self.client.wallet.find_object_for_gas(gas_budget=gas_budget, balance=balance)
+            gas = await self.client.wallet.find_object_for_gas(gas_budget=gas_budget, gas_price=gas_price,
+                                                               balance=balance)
             if not gas:
                 raise exceptions.InsufficientGas()
 
@@ -161,5 +162,7 @@ class Transaction:
         else:
             raise exceptions.NoSuchToken('There is no such token!')
 
-    async def send_nft(self, nft: Nft, recipient: types.SuiAddress) -> Optional[dict]:
-        return await self.send_object(object_id=nft.object_id, recipient=recipient)
+    async def send_nft(self, nft: Nft, recipient: types.SuiAddress, gas_budget: int = 1_000,
+                       gas_price: Optional[int] = None) -> Optional[dict]:
+        return await self.send_object(object_id=nft.object_id, recipient=recipient, gas_budget=gas_budget,
+                                      gas_price=gas_price)

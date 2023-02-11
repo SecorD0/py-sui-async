@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import Optional, List
 
 import aiohttp
 from pretty_utils.type_functions.lists import split_list
@@ -72,8 +72,8 @@ class Wallet:
         finally:
             return balance
 
-    async def find_object_for_gas(self, gas_budget: int = 10_000, balance: Optional[Balance] = None,
-                                  reverse: bool = False) -> Optional[str]:
+    async def find_pay_object(self, amount: int, balance: Optional[Balance] = None,
+                              excluding: Optional[str or List[str]] = '') -> Optional[str]:
         if not balance:
             coin = None
             response = await RPC.getObjectsOwnedByAddress(client=self.client, address=self.client.account.address)
@@ -109,12 +109,27 @@ class Wallet:
             coin = balance.coin
 
         if not coin:
-            raise exceptions.InsufficientBalance()
+            raise exceptions.NoObjects()
 
-        sorted_objects = sorted(coin.object_ids, key=lambda obj: obj.amount, reverse=reverse)
-        for object_id in sorted_objects:
-            if object_id.amount >= gas_budget:
-                return object_id.id
+        sorted_objects = []
+        for object_instance in sorted(coin.object_ids, key=lambda obj: obj.amount):
+            if object_instance.id not in excluding:
+                sorted_objects.append(object_instance)
+
+        if not sorted_objects:
+            raise exceptions.NoObjects()
+
+        for object_instance in sorted_objects:
+            if object_instance.amount >= amount:
+                return object_instance.id
+
+    async def find_object_for_gas(self, gas_budget: int = 10_000, gas_price: Optional[int] = None,
+                                  balance: Optional[Balance] = None,
+                                  excluding: Optional[str or List[str]] = '') -> Optional[str]:
+        if not gas_price:
+            gas_price: int = (await RPC.getReferenceGasPrice(client=self.client))['result']
+
+        return await self.find_pay_object(amount=gas_budget * gas_price, balance=balance, excluding=excluding)
 
     async def request_coins_from_faucet(self) -> Optional[dict]:
         if self.client.network.faucet:

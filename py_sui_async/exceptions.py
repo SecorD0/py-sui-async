@@ -49,5 +49,9 @@ class WalletException(Exception):
     pass
 
 
+class NoObjects(WalletException):
+    pass
+
+
 class FaucetException(WalletException):
     pass
