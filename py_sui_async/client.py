@@ -17,8 +17,9 @@ from py_sui_async.wallet import Wallet
 
 
 class Client:
-    def __init__(self, mnemonic: Optional[str] = None, proxy: Optional[str] = None, network: Network = Networks.Testnet,
-                 check_proxy: bool = True, derivation_path: str = "m/44'/784'/0'/0'/0'") -> None:
+    def __init__(self, mnemonic: Optional[str] = None, network: Network = Networks.Testnet,
+                 derivation_path: str = "m/44'/784'/0'/0'/0'", proxy: Optional[str] = None,
+                 check_proxy: bool = True) -> None:
         self.network = network
         self.derivation_path = derivation_path
 
@@ -38,10 +39,11 @@ class Client:
                     self.proxy = f'http://{self.proxy}'
 
                 if check_proxy:
-                    your_ip = requests.get('http://eth0.me/', proxies={'http': self.proxy,
-                                                                       'https': self.proxy}).text.rstrip()
+                    your_ip = requests.get(
+                        'http://eth0.me/', proxies={'http': self.proxy, 'https': self.proxy}, timeout=10
+                    ).text.rstrip()
                     if your_ip not in proxy:
-                        raise exceptions.InvalidProxy(f"Proxy doesn't work! Your IP is {your_ip}")
+                        raise exceptions.InvalidProxy(f"Proxy doesn't work! Your IP is {your_ip}.")
 
             except Exception as e:
                 raise exceptions.InvalidProxy(str(e))
@@ -60,10 +62,14 @@ class Client:
             private_key = StringAndBytes(str_="0x" + str(private_key), bytes_=private_key.ToBytes())
             public_key = bip32_der_ctx.PublicKey().RawCompressed()
             public_key = StringAndBytes(str_="0x" + str(public_key), bytes_=public_key.ToBytes())
-            address = "0x" + hashlib.sha3_256(public_key.bytes_).digest().hex()[:40]
+            pub_key_bytes = public_key.bytes_
+            address = "0x" + hashlib.blake2b(
+                pub_key_bytes[0:33] if pub_key_bytes[0] == 0 else pub_key_bytes[0:34], digest_size=32
+            ).hexdigest()
 
-            self.account = WalletInfo(mnemonic=mnemonic, private_key=private_key, public_key=public_key,
-                                      address=address)
+            self.account = WalletInfo(
+                mnemonic=mnemonic, private_key=private_key, public_key=public_key, address=address
+            )
 
         self.nfts = NFT(self)
         self.transactions = Transaction(self)
@@ -82,5 +88,6 @@ class Client:
     async def sign_and_execute(self, tx_bytes: StringAndBytes) -> Optional[dict]:
         signature = (await self.sign(tx_bytes.bytes_)).decode()
         request_type = ExecuteType.WaitForLocalExecution
-        return await RPC.executeTransactionSerializedSig(client=self, tx_bytes=tx_bytes.str_, signature=signature,
-                                                         request_type=request_type)
+        return await RPC.executeTransactionSerializedSig(
+            client=self, tx_bytes=tx_bytes.str_, signature=signature, request_type=request_type
+        )
